@@ -29,3 +29,4 @@ for tag in tags:
 		#documents.append(url)
 		with open(ref, 'wb') as f:
 			f.write(doc_req.content)
+			
