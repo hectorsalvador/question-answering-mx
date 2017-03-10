@@ -13,18 +13,23 @@ Make an automatic question-answering program that finds criminal and administrat
 According to Jurafsky and Martin (2016), there are three stages for question answering: question processing (decomposing the question into a query that can be then ?asked? to the documents), passage retrieval (take que query and the corpora, find relevant documents, find relevant passages, and pass these to the next step), and answer processing (returning the retrieved passage into a human-readable result).
 
 Thus our project will do the following:  
-1.	Data generation
+
+1. Data generation
+
 - Scraper for the Congress website. A program that processes documents into pure text (e.g. remove headers, remove old decrees, remove page footnotes and numbering).
 
-2.	Query processing
+2. Query processing
+
 - We will create a function that transforms a question into a query to apply Information Retrieval algorithms. We will limit it to questions related to fines and jail times and if there are no matches, suggest an alternative query.
 - Question classification should be very similar for all our queries. There exist some answer type taxonomies that can be built semi-automatically (Wordnet) but they can also be built manually. 
 
-3.	Passage retrieval 
+3. Passage retrieval 
+
 - Use information retrieval techniques (e.g. DF-IDF) to obtain the relevant sections, articles, and/or paragraphs. 
 - Thesaurus generation - Clustering words that are close enough in the text.
 
-4.	Answer processing 
+4. Answer processing 
+
 - Function that uses regular expressions and a trained model of answers to indicate if an answer is the right type of answer (year, fees, etc) 
 
 ## Evaluation of results
@@ -57,7 +62,7 @@ Week 9 - 10
 Final presentation
 - Present a program that asks a series of predetermined and non-predetermined questions and provides an answer. (Carlos & Hector)
 
-Expected libraries that will be used
+## Expected libraries that will be used
 - Shell scripts
 - BeautifulSoup + Requests (for scraping laws)
 - Pandas (Feature preprocessing)
