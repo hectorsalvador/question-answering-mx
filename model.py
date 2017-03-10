@@ -11,6 +11,8 @@ def read_index():
 	doc_index, pas_index = {}, {}
 	return doc_index, pass_index
 
+
+
 #### Main functions ####
 
 def query_formulation(question):
@@ -56,8 +58,8 @@ def answer_processing(passages, ans_type):
 	answer_string = ''
 	return answer_string
 
-####### Wrapper ########
 
+####### Wrapper ########
 
 def get_answers(question):
 	doc_index, pass_index = read_index()

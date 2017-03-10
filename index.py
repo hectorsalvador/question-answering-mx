@@ -3,10 +3,17 @@
 
 from nltk.stem.snowball import SpanishStemmer
 import json
+import os 
 
 ########################
 ### Helper functions ###
 ########################
+
+STOP_WORDS = ['la', 'las', 'el', 'los', 'lo', 'y', 'o', 'que', 'se',\
+ 'a', 'con', 'de', 'en', 'por', 'para', 'no', 'al', 'del', 'si',\
+ 'un', 'una', 'este', 'hay', 'como', 'su', 'asi']
+
+path_pfx = os.getcwd()
 
 def get_text(filename):
 	'''
@@ -32,8 +39,8 @@ def preprocess_text_to_words(text):
 	PUNCTUATION = '".,;:()/-|…“'
 	for p in PUNCTUATION:
 		text = text.replace(p, '')
-	words = text.split()
-	return words
+	words, paragraphs = text.split(), text.split('\n')
+	return words, paragraphs
 
 def build_index_from_words(words, stem):
 	'''
@@ -47,12 +54,34 @@ def build_index_from_words(words, stem):
 	index = {}
 	stemmer = SpanishStemmer()
 	for word in words:
-		if stem:
-			word = stemmer.stem(word)
-		if word not in index:
-			index[word] = 0
-		index[word] += 1
+		if word not in STOP_WORDS:
+			if stem:
+				word = stemmer.stem(word)
+			if word not in index:
+				index[word] = 0
+			index[word] += 1
 	return index
+
+def build_inverted_index(index, inv_index, prefix):
+	for key in index.keys():
+		if key not in inv_index:
+			inv_index[key] = []
+		inv_index[key].append(prefix)
+
+
+def track_stop_words(index, stop_words, top=20):
+	'''
+	Only used this function to find the highest 20 occurring words.
+	Then deleted manually the ones that seemed most appropriate, and
+	stored them in STOP_WORDS.
+	'''
+	common_words = sorted(index, key=index.get, reverse=True)[:top]
+	new_words = {x: index[x] for x in common_words}
+	for key, val in new_words.items():
+		if key in stop_words:
+			stop_words[key] += new_words[key]
+		else:
+			stop_words[key] = new_words[key]
 
 def save_index_to_json(index, json_name):
 	with open(json_name, 'w', encoding='utf-8') as f:
@@ -65,46 +94,70 @@ def save_index_to_json(index, json_name):
 ### Build word count
 def build_word_indices(files, stem):
 	'''
-	wrapper
+	wrapper Do I really need this word count? I think I do, for
+	tracking the stop words
 	'''
-	for prefix in files:
-		filename = 'leyes/{}.txt'.format(prefix)
-		text = get_text(filename)
-		words = preprocess_text_to_words(text)
-		index = build_index_from_words(words, stem)
-		json_name = 'indices/{}.json'.format(prefix + stem*'_stem')
-		save_index_to_json(index, json_name)
-
-### Build inverted index
-def build_inverted_index(files, inv_index_name, stem):
+	stop_words = {} #keep track of most common words
 	inv_index = {}
+
 	for prefix in files:
-		filename = 'indices/{}.json'.format(prefix + stem*'_stem')
-		f = open(filename, 'r', encoding='utf-8')
-		index = json.load(f)
-		for key in index.keys():
-			if key not in inv_index:
-				inv_index[key] = []
-			inv_index[key].append(prefix)
-	save_index_to_json(inv_index, inv_index_name)
+		print("Processing {}..".format(prefix))
+		filename = path_pfx + '/leyes/{}.txt'.format(prefix)
+
+		#preprocess
+		text = get_text(filename)
+		words, paragraphs = preprocess_text_to_words(text)
+		
+		#build word count index, inverted index, and paragraph index
+		index = build_index_from_words(words, stem)
+		p_index = build_paragraph_inv_index(paragraphs, stem)
+		track_stop_words(index, stop_words)
+		build_inverted_index(index, inv_index, prefix)
+		
+		#save and print that done
+		index_name = path_pfx + '/indices/{}.json'.format(prefix + stem*'_stem')
+		save_index_to_json(index, index_name)
+
+		p_index_name = path_pfx + '/indices/{}_p.json'.format(prefix + stem*'_stem')
+		save_index_to_json(p_index, p_index_name)
+	
+		print("  ..finished with {}.".format(prefix))
+
+	inverted_filename = path_pfx + '/indices/inverted{}.json'.format(stem*'_stem')
+	save_index_to_json(inv_index, inverted_filename)
+
+	return stop_words
+
+def build_paragraph_inv_index(paragraphs, stem):
+	p_index = {}
+	stemmer = SpanishStemmer()
+	for i, paragraph in enumerate(paragraphs):
+		words = [word for word in paragraph.split() if word not in STOP_WORDS]
+		for word in words:
+			if stem:
+				word = stemmer.stem(word)
+			if word not in p_index:
+				p_index[word] = []
+			p_index[word].append(i)
+	return p_index
 
 
 ########################
 ### 	Wrapper 	 ###
 ########################
 
-### I should have a wrapper function here maybe?
-### I don't know which json will work better, stemmed or not. So let's
-### try both for now
+def go(stem=True, show_stop_words=False):
+	''' Wrapper function.
+	'''
+	if stem:
+		print("Using stemmed words.")
+	else:
+		print("Using non-stemmed words.")
 
-leyes = ['LH', 'codigocivil']
-stem = True
-build_word_indices(leyes, stem)
-build_inverted_index(leyes, 'indices/inverted.json', stem)
+	leyes = ['LH', 'codigocivil', 'LAmp', 'LGeotermia', 'LOCONACYT', 'LTOSF']
+	stop_words = build_word_indices(leyes, stem) #solo para ver stop words
 
-# sentences = [nltk.pos_tag(sent, lang='spa') for sent in sentences]
-
-# for i in range(len(sentences)):
-#     for tup in sentences[i]:
-#         if tup[0] == "multa":
-#             print(i)
+	if show_stop_words:
+		return stop_words
+	else:
+		print("Finished processing documents. Stored in their respective folders.")
