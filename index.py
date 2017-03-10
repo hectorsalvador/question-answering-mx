@@ -4,6 +4,7 @@
 from nltk.stem.snowball import SpanishStemmer
 import json
 import os 
+import pandas as pd
 
 ########################
 ### Helper functions ###
@@ -105,7 +106,10 @@ def build_word_indices(files, stem):
 		filename = path_pfx + '/leyes/{}.txt'.format(prefix)
 
 		#preprocess
-		text = get_text(filename)
+		try:
+			text = get_text(filename)
+		except:
+			continue
 		words, paragraphs = preprocess_text_to_words(text)
 		
 		#build word count index, inverted index, and paragraph index
@@ -154,8 +158,10 @@ def go(stem=True, show_stop_words=False):
 	else:
 		print("Using non-stemmed words.")
 
-	leyes = ['LH', 'codigocivil', 'LAmp', 'LGeotermia', 'LOCONACYT', 'LTOSF']
-	stop_words = build_word_indices(leyes, stem) #solo para ver stop words
+	#leyes = ['LH', 'codigocivil', 'LAmp', 'LGeotermia', 'LOCONACYT', 'LTOSF']
+	leyes = pd.read_csv('docnames.csv')
+
+	stop_words = build_word_indices(list(leyes.ix[:,0]), stem) #solo para ver stop words
 
 	if show_stop_words:
 		return stop_words
