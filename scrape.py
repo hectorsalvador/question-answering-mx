@@ -1,5 +1,5 @@
-## Web scraping script
-## Hector Salvador
+### Web scraping script
+### Hector Salvador
 '''
 This script retrieves the txt files from the following website:
 http://www.diputados.gob.mx/LeyesBiblio/index.htm
@@ -43,6 +43,4 @@ def go():
 	with open('docnames.csv', 'w') as f:
 	    writer = csv.writer(f)
 	    writer.writerows(zip(docs, name))
-			
-
-re.match(r'(^[A-Z]+)(.*?)(\\r\\x03\\r\\r\\x04\\r\\r\\x03\\r\\r\\x04\\r\\r\\r\\r\\x13.*)', text)
+	
