@@ -1,3 +1,11 @@
+### Ngram model for identifying question results type
+### Hector Salvador Lopez
+
+'''
+These functions generate word indices, later used to find 
+quickly word appearance on documents. Indices are stored as json
+files in a folder called indices/.
+'''
 from nltk.corpus import brown
 from sklearn.model_selection import train_test_split
 import math
@@ -342,6 +350,8 @@ def train_test():
     print("Best model has an f1 of {} and lambdas of {}".format(max_val, max_weights))
 
 def retrieve_model():
+    '''Called by passage retrieval function.
+    '''
     data = Data()
     clf = NGramClassifier(0, 0, 1) 
     clf.train(data.data[1]['train'], 1)
