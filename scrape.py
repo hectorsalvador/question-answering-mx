@@ -43,7 +43,7 @@ def go():
 			with open(ref, 'wb') as f:
 				f.write(doc_req.content)
 
-	with open('docnames.csv', 'w') as f:
+	with open('doc/docnames.csv', 'w') as f:
 		writer = csv.writer(f)
 		#writer.writerow(['id', 'ley'])
 		name.pop(0) # extra tag at the beginning "Reformas a la Constitución"
