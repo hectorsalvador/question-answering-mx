@@ -147,7 +147,10 @@ def texts(words, k, stem=True):
 
 	return df
 
-words = ["robo", "hidrocarburos"]
+# words = ["robo", "hidrocarburos", 'contrabando', "multa", "sanción",\
+# 		 "ducto", "pepino", "hurto", "enajenación", "gasolina", "diésel",\
+# 		 'sancionará', 'castigará']
+words = ["robo", "hidrocarburos", 'contrabando', "multa"]
 
 start = time.time()
 texts(words, 3)

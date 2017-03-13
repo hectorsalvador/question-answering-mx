@@ -41,6 +41,7 @@ def go():
 				f.write(doc_req.content)
 
 	with open('docnames.csv', 'w') as f:
-	    writer = csv.writer(f)
-	    writer.writerows(zip(docs, name))
-	
+		writer = csv.writer(f)
+		#writer.writerow(['id', 'ley'])
+		name.pop(0) # extra tag at the beginning "Reformas a la Constitución"
+		writer.writerows(zip(docs, name))
