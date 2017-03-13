@@ -1,6 +1,11 @@
 ### Index creation
 ### Hector Salvador Lopez
 
+'''
+These functions generate word indices, later used to find 
+quickly word appearance on documents. Indices are stored as json
+files in a folder called indices/.
+'''
 from nltk.stem.snowball import SpanishStemmer
 import json
 import os 
@@ -68,7 +73,6 @@ def build_inverted_index(index, inv_index, prefix):
 		if key not in inv_index:
 			inv_index[key] = []
 		inv_index[key].append(prefix)
-
 
 def track_stop_words(index, stop_words, top=20):
 	'''
@@ -151,17 +155,14 @@ def build_paragraph_inv_index(paragraphs, stem):
 ########################
 
 def go(stem=True, show_stop_words=False):
-	''' Wrapper function.
-	'''
+	''' Wrapper function'''
 	if stem:
 		print("Using stemmed words.")
 	else:
 		print("Using non-stemmed words.")
 
-	#leyes = ['LH', 'codigocivil', 'LAmp', 'LGeotermia', 'LOCONACYT', 'LTOSF']
 	leyes = pd.read_csv('docnames.csv')
-
-	stop_words = build_word_indices(list(leyes.ix[:,0]), stem) #solo para ver stop words
+	stop_words = build_word_indices(list(leyes.ix[:,0]), stem)
 
 	if show_stop_words:
 		return stop_words
