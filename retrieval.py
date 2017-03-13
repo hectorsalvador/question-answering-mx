@@ -20,6 +20,7 @@ from textblob import TextBlob as tb
 import time
 from jellyfish import jaro_winkler
 from ngrams import retrieve_model
+import re
 
 
 class ScoreParagraphs(object):
@@ -91,7 +92,8 @@ class ScoreParagraphs(object):
 
 		for law in self.doc_names:
 			filename = self.path_pfx + '/leyes/{}.txt'.format(law)
-			paragraph_list = get_text(filename).split('\n')
+			paragraphs = re.finditer(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)', text, flags=re.DOTALL)
+			paragraph_list = [match.group(2) for match in paragraphs]
 
 			for word in self.stemmed_words:
 				#print(word)
@@ -173,8 +175,8 @@ class ScoreParagraphs(object):
 		self.results.drop_duplicates(inplace=True)
 		k = lambda x: len(x.split()) > min_size
 		self.results = self.results[self.results.text.apply(k)]
-		clf = retrieve_model()
-		clf.predict(self.results)
+		# clf = retrieve_model()
+		# print(clf.predict(self.results))
 
 	def load_law_names(self, filename):
 		rv = pd.read_csv(filename, header=None, names=['law','Law'])
@@ -208,10 +210,9 @@ class ScoreParagraphs(object):
 question = 'cuál es la pena por asesinar a mi hermano'
 CASTIGOS = ["castigo", "sanción", "multa"]
 words = ["asesinar", "persona"] + CASTIGOS
-words2 = ["asesino", "asesinar", "homicidio", "matar", "persona",\
-		  "individuo", "hermano"]
-# words2 = ["robar", "robo", "enajenación", "enajenar", "usurpar", \
-# 		"ílicito", "auto", "automóvil", "carro"] + CASTIGOS
+# words2 = ["asesino", "asesinar", "homicidio", "matar", "persona",\
+# 		  "individuo", "hermano"] #THIS WORKS!
+words2 = ["importación", "ilegal", "productos"] + CASTIGOS
 
 # df = pd.DataFrame(columns=[range(5), 'k', 'b'])
 # for k in range(0, 80, 5):
@@ -225,6 +226,11 @@ res = test.texts(20, method='bm25')
 print('It took {} seconds.'.format(time.time()-start))
 		# rv = list(res.text).extend([k, b])
 		# df = df.append(rv)
+
+clf = retrieve_model()
+clfs = clf.predict(res)
+probs = [math.exp(i)-1 for i in clf.predict(res)]
+print([list(res.text)[x] for x in range(len(probs)) if probs[x] > 0])
 
 
 

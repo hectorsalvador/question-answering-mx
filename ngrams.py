@@ -184,7 +184,7 @@ class NGramClassifier(object):
             results[label] = linear_smoothing(lambdas, words_list, model_list, N)
         return results
     
-    def predict(self, list_of_sentences):
+    def predict(self, list_of_sentences, prob=True):
         '''
         Takes:
             - list_of_sentences, a pandas df
@@ -195,14 +195,23 @@ class NGramClassifier(object):
         rv = []
         for i, sentence in list_of_sentences.iterrows():
             results = self.predict_one_sentence(sentence.text)
-            max_cat = 0
-            max_val = 0
-            for key, value in results.items():
-                if value > max_val:
-                    max_val = value
-                    max_cat = key
-            #if max_cat == 0: print(results)
-            rv.append(max_cat)
+            if prob:
+                if results[0] == 0:
+                    if results[1] != 0:
+                        score = 1
+                    else:
+                        score = 0.5
+                else:
+                    score = results[1]-results[0]
+            else:
+                max_cat = 0
+                max_val = 0
+                for key, value in results.items():
+                    if value > max_val:
+                        max_val = value
+                        max_cat = key
+                score = max_cat
+            rv.append(score)
             
         return rv
     

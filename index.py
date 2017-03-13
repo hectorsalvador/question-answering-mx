@@ -10,6 +10,7 @@ from nltk.stem.snowball import SpanishStemmer
 import json
 import os 
 import pandas as pd
+import re
 
 ########################
 ### Helper functions ###
@@ -45,7 +46,10 @@ def preprocess_text_to_words(text):
 	PUNCTUATION = '".,;:()/-|…“'
 	for p in PUNCTUATION:
 		text = text.replace(p, '')
-	words, paragraphs = text.split(), text.split('\n')
+	words = text.split()
+	# paragraphs = text.split('\n')
+	paragraphs = re.finditer(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)', text, flags=re.DOTALL)
+	paragraphs = [match.group(2) for match in paragraphs]
 	return words, paragraphs
 
 def build_index_from_words(words, stem):
@@ -161,7 +165,7 @@ def go(stem=True, show_stop_words=False):
 	else:
 		print("Using non-stemmed words.")
 
-	leyes = pd.read_csv('docnames.csv')
+	leyes = pd.read_csv('doc/docnames.csv')
 	stop_words = build_word_indices(list(leyes.ix[:,0]), stem)
 
 	if show_stop_words:
