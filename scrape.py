@@ -3,6 +3,8 @@
 '''
 This script retrieves the txt files from the following website:
 http://www.diputados.gob.mx/LeyesBiblio/index.htm
+It also saves the names of the laws for future reference. They're
+saved in a file called "docnames.csv"
 ''' 
 
 import bs4
@@ -45,3 +47,4 @@ def go():
 		#writer.writerow(['id', 'ley'])
 		name.pop(0) # extra tag at the beginning "Reformas a la Constitución"
 		writer.writerows(zip(docs, name))
+		
