@@ -34,6 +34,15 @@ class W2V_Model(object):
 
 		return results_list
 
+	def find_concepts(self, positive, negative, top_n = 20):
+		results = self.model.most_similar(positive = positive,
+		negative = negative, topn = top_n)
+		results_list = []
+		for word, score in results:
+			results_list.append(word)
+
+		return results_list
+
 	def intruder(self,words):
 
 		results = self.model.doesnt_match(words)

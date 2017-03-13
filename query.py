@@ -16,7 +16,6 @@ class Query(object):
 		self.W2V.load(w2vfile, False)
 		self.Tagger = Spanish_Postagger(tagfile, jarfile)
 		self.Tagger.load_tagger()
-		self.question_json = question_json
 		self.question = None 
 		self.query = []
 		self.qtype = None 
@@ -87,7 +86,7 @@ class Query(object):
 
 	def add_words(self, word_list):
 		
-		self.query += list_noun
+		self.query.update(word_list)
 
 
 	def remove_words(self, word_list):
