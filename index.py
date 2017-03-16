@@ -10,7 +10,7 @@ from nltk.stem.snowball import SpanishStemmer
 import json
 import os 
 import pandas as pd
-import re
+import regex as re
 
 ########################
 ### Helper functions ###
@@ -48,8 +48,9 @@ def preprocess_text_to_words(text):
 		text = text.replace(p, '')
 	words = text.split()
 	# paragraphs = text.split('\n')
-	paragraphs = re.finditer(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)', text, flags=re.DOTALL)
-	paragraphs = [match.group(2) for match in paragraphs]
+	paragraphs = re.findall(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)',\
+		text, flags=re.DOTALL, overlapped=True)
+	paragraphs = [match[1] for match in paragraphs]
 	return words, paragraphs
 
 def build_index_from_words(words, stem):

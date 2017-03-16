@@ -8,6 +8,7 @@ files in a folder called indices/.
 '''
 from nltk.corpus import brown
 from sklearn.model_selection import train_test_split
+from index import get_text, preprocess_text_to_words
 import math
 import pandas as pd
 import random
@@ -330,8 +331,8 @@ class Data(object):
                 filename = path_pfx + '/multas.txt'
             elif label == 0:
                 filename = path_pfx + '/nomultas.txt'
-            text = open(filename).read().split('\n')
-            text = [i for i in text if len(i.strip()) > 0]
+            text = get_text(filename)
+            _, text = preprocess_text_to_words(text)
             rv = pd.DataFrame({'text': text, 'labels': [label]*len(text)})
             train, test, holdout = self.split(rv)
             self.data[label] = {'train': train, 'test': test, 'holdout': holdout}  

@@ -20,7 +20,7 @@ from textblob import TextBlob as tb
 import time
 from jellyfish import jaro_winkler
 from ngrams import retrieve_model
-import re
+import regex as re
 
 
 class ScoreParagraphs(object):
@@ -51,7 +51,7 @@ class ScoreParagraphs(object):
 			for word in words:
 				word = self.stemmer.stem(word)
 				processed.append(word) 
-		return processed
+		return set(processed)
 
 	def load(self, filename):
 		#print('Trying to load {}'.format(filename))
@@ -92,15 +92,16 @@ class ScoreParagraphs(object):
 
 		for law in self.doc_names:
 			filename = self.path_pfx + '/leyes/{}.txt'.format(law)
-			paragraphs = re.finditer(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)', text, flags=re.DOTALL)
-			paragraph_list = [match.group(2) for match in paragraphs]
+			text = get_text(filename)
+			# paragraphs = re.findall(r'(Artículo|ARTÍCULO [0-9]+)(.*?)(Artículo|ARTÍCULO)',\
+			# 	text, flags=re.DOTALL, overlapped=True)
+			# paragraph_list = [match[1] for match in paragraphs]
+			_, paragraph_list = preprocess_text_to_words(text)
 
 			for word in self.stemmed_words:
 				#print(word)
 				paragraphs = self.paragraph_inverted_indices[law].get(word, [])
-				#print(paragraphs)
 				results = [[paragraph_list[x], law, 0] for x in paragraphs]
-				#print(results)
 				df_temp = pd.DataFrame(results, columns=['text', 'law', 'score'])
 				self.results = self.results.append(df_temp, ignore_index=True, )
 
@@ -207,12 +208,13 @@ class ScoreParagraphs(object):
 
 		return self.results.head(top_k)
 
+'''
 question = 'cuál es la pena por asesinar a mi hermano'
 CASTIGOS = ["castigo", "sanción", "multa"]
 words = ["asesinar", "persona"] + CASTIGOS
-# words2 = ["asesino", "asesinar", "homicidio", "matar", "persona",\
-# 		  "individuo", "hermano"] #THIS WORKS!
-words2 = ["importación", "ilegal", "productos"] + CASTIGOS
+words2 = ["asesino", "asesinar", "homicidio", "matar", "persona",\
+		  "individuo", "hermano"] #THIS WORKS!
+#words2 = ["importación", "ilegal", "productos"] + CASTIGOS
 
 # df = pd.DataFrame(columns=[range(5), 'k', 'b'])
 # for k in range(0, 80, 5):
@@ -231,7 +233,7 @@ clf = retrieve_model()
 clfs = clf.predict(res)
 probs = [math.exp(i)-1 for i in clf.predict(res)]
 print([list(res.text)[x] for x in range(len(probs)) if probs[x] > 0])
-
+'''
 
 
 

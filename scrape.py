@@ -3,8 +3,9 @@
 '''
 This script retrieves the txt files from the following website:
 http://www.diputados.gob.mx/LeyesBiblio/index.htm
+
 It also saves the names of the laws for future reference. They're
-saved in a file called "docnames.csv"
+saved in a file called "doc/docnames.csv"
 Scraper working as of 3/13/2017.
 ''' 
 
@@ -45,6 +46,5 @@ def go():
 
 	with open('doc/docnames.csv', 'w') as f:
 		writer = csv.writer(f)
-		#writer.writerow(['id', 'ley'])
-		name.pop(0) # extra tag at the beginning "Reformas a la Constitución"
+		name.pop(0) # extra tag not used: "Reformas a la Constitución"
 		writer.writerows(zip(docs, name))
