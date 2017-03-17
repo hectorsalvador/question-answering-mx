@@ -94,26 +94,25 @@ We got mixed results for these questions. Overall, we are still far from retriev
 
 For the query corresponding to the first question, \textit{What is the punishment for murder?}, we obtained the following articles:
 \begin{itemize}
-\item In cases of {\_}delitos culposos{\_}, up to one quarter of the penalties and security measures assigned by law to basic type of {\_}delito doloso{\_}, with exception of those for which the law specifies a specific penalty, will be imposed. Additionally, if corresponding, it will be imposed the suspension of up to three years of license to work on their corresponding profession. [...]
-\item The judge will void the substitution and will order the execution of prison penalty previously imposed when the sentenced doesn't comply with the conditions ordered for such effect, except when the judge esteems convenient to warn the sentenced that if a new fault is observed or is condemned by a new {\_}delito{\_}, the sanction will be made effective. [...]
-\item Technical or artistic professionals and their auxiliaries will be responsible for the {\_}delitos{\_} they might commit in the exercise of their profession [...]: \\
-Additional to the fixed sanction for the felonies consummated, depending on whether {\_}delitos{\_} are {\_}culposos{\_} or {\_}dolosos{\_}, a suspension of one month up to two years will be applied or up to definitive suspension in the case of {\_}reincidence. [...]
+\item In cases of wrongful misdemeanor, up to one quarter of the penalties and security measures assigned by law to basic type of criminal offenses, with exception of those for which the law specifies a specific penalty, will be imposed. Additionally, if corresponding, it will be imposed the suspension of up to three years of license to work on their corresponding profession. [...]
+\item The judge will void the substitution and will order the execution of prison penalty previously imposed when the sentenced doesn't comply with the conditions ordered for such effect, except when the judge esteems convenient to warn the sentenced that if a new fault is observed or is condemned by a new criminal offense, the sanction will be made effective. [...]
+\item Technical or artistic professionals and their auxiliaries will be responsible for the crimes they might commit in the exercise of their profession [...]: \\
+Additional to the fixed sanction for the felonies consummated, depending on whether offenses are wrongful misdemeanor or criminal offenses, a suspension of one month up to two years will be applied or up to definitive suspension in the case of recidivism. [...]
 \item Prison of three day up to two years or 30 to 90 days of fine will be imposed to: \\
 I. Whomever hides, destroys, or buries a corpse or human fetus without the order of the authority who corresponds, or without the requisites stipulated by the Civil Code and Health Code or special laws. \\
 II. [...]
 \end{itemize}
 
-We can identify that it is only in the last result where we have explicit penalties for crimes. Nevertheless, these do not correspond directly to murder or homicide, but rather to burying dead corpses. Although related, not the same concept. The other results talk about {\_}delitos {\_}dolosos y {\_}culposos, these are categorizations, and murder fall into one of these, depending on the intention of the murderer. 
+We can identify that it is only in the last result where we have explicit penalties for crimes. Nevertheless, these do not correspond directly to murder or homicide, but rather to burying dead corpses. Although related, not the same concept. The other results talk about criminal offenses and wrongful misdemeanors, these are categorizations, and murder fall into one of these, depending on the intention of the murderer. 
 
 For the following two questions, we got unusual results. Sometimes these would refer to ...
  
 \subsection{Further Work}
 There are possibilities of improvement in all the sections of our work. The first and most important would be to create a test dataset with some example questions for which we know exactly which articles are relevant. Since neither of use are lawyers, we could only use our best judgement to determine which seemed to be sensible results. But after having a useful test set, we could do the following improvements.
 \begin{description}
-\item \textbf{Document processing:} 
+\item \textbf{Document processing:} improve the pipeline to convert \texttt{doc} to \texttt{txt} files.
 \item \textbf{Question processing:} 
-\item \textbf{Querying:} 
-\item \textbf{Document retrieval:} test other 
+\item \textbf{Document retrieval:} test other methods for passage retrieval (e.g. proximity), and other parameters for the tested ones (e.g. use a 4-gram or higher-gram model). It could also be useful to make a more specific document retrieval, based on the whole query, and not individual words.
 \item \textbf{Answer processing:} actually develop a script that takes a long passage and returns only the amount of information related to the sanction, penalty, or fine
 \end{description}
 
@@ -133,16 +132,16 @@ There are possibilities of improvement in all the sections of our work. The firs
 \end{itemize}
 
 \subsection{Instructions}
-Before running the code, make sure that the \texttt{txt} files are in folder called leyes and that the file called \texttt{docnames.csv} is in the folder called \texttt{doc}.
+Before running the code, make sure that the \texttt{txt} files are in folder called leyes and that the file called \texttt{docnames.csv} is in the folder called \texttt{doc}. Make sure that the \texttt{stanford-postagger-full-2016-10-31} folder is in the root directory. Also make sure that the word2vec vectorx \texttt{SBW-vectors-300-min5.txt} are in the \texttt{Data} folder.
 
 \begin{enumerate}
 \item Open a Python shell, preferably ipython.
 \item If you want to download the \texttt{doc} files, run \\ \texttt{\$ run scrape.py} \\ \texttt{\$ go()} \\ This will download the \texttt{doc} files in the folder called \texttt{/doc}.
 \item Create the indices by running \\ \texttt{\$ run index.py} \\ \texttt{\$ go()}
-\item Run a query with a sentence specified in \texttt{query.py}
+\item You can then open the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository. Instructions for the notebook are written in the file.
 \end{enumerate}
 
-Alternatively, you can use the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository.
+
 
 \begin{thebibliography}{9}
 \bibitem{jurafsky}
