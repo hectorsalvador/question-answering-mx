@@ -132,16 +132,16 @@ There are possibilities of improvement in all the sections of our work. The firs
 \end{itemize}
 
 \subsection{Instructions}
-Before running the code, make sure that the \texttt{txt} files are in folder called leyes and that the file called \texttt{docnames.csv} is in the folder called \texttt{doc}. Make sure that the \texttt{stanford-postagger-full-2016-10-31} folder is in the root directory. Also make sure that the word2vec vectorx \texttt{SBW-vectors-300-min5.txt} are in the \texttt{Data} folder.
+Before running the code, make sure that the \texttt{txt} files are in folder called leyes and that the file called \texttt{docnames.csv} is in the folder called \texttt{doc}. Remember also to add the stanford postagger (\texttt{stanford-postagger-full-2016-10-31}) in the root directory and the word2vec file (\texttt{SBW-vectors-300-min5.txt}) in the \texttt{Data} folder.
 
 \begin{enumerate}
 \item Open a Python shell, preferably ipython.
 \item If you want to download the \texttt{doc} files, run \\ \texttt{\$ run scrape.py} \\ \texttt{\$ go()} \\ This will download the \texttt{doc} files in the folder called \texttt{/doc}.
 \item Create the indices by running \\ \texttt{\$ run index.py} \\ \texttt{\$ go()}
-\item You can then open the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository. Instructions for the notebook are written in the file.
+\item Run a query with a sentence specified in \texttt{query.py}
 \end{enumerate}
 
-
+Alternatively, you can use the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository.
 
 \begin{thebibliography}{9}
 \bibitem{jurafsky}
