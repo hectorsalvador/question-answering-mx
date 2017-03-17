@@ -54,13 +54,8 @@ We got inspiration from previous work on how create an answering machine
 \begin{itemize}
 
 \item Dominguez-Sal, David (2005) A Machine Learning Approach for Factoid Question Answering. This paper presents a factoid Question Answering system that is fully based on machine learning. The system achieves similar results to a state-of-the art QA system with answer extraction rules developed by a human expert. The paper uses a typical architecture consisting of three components linked sequentially: Question Processing (QP), which identifies the type of the put question, followed by Passage Retrieval (PR), which extracts a small number of relevant passages from the underlying speech transcriptions, and finally Answer Extraction (AE), which extracts and ranks exact answers from the previously retrieved passages. It has a similar pipeline than Jurafsky and Martin (2016) which was reassuring, although, it mainly relies on Maximum Entropy multiclass classifier to do the question and answering processing.
-
 \item  Strohn, Eylon. (2015) Question Answering Using Deep Learning. The paper proposes the application of several deep learning models to the question answering tasks. It particularly focuses on recurrent neural networks-based baselines. The idea is to propose a different idea than the conventional linguistically-based NLP techniques, such as parsing, part-of-speech tagging and coreference resolution.
-
 \item  Florent Jousse, Isabelle Tellier, Marc Tommasi and Patrick Marty (2014) Learning to Extract Answers in Question Answering: Experimental Studies. The main objective of this study it to adapt machine learning techniques defined for Information Extraction tasks to the slightly different task of answer extraction in QA systems. The specificities of QA systems are identified and exploited in this adaptation. Three algorithms, assuming an increasing abstraction of natural language texts, are tested and compared.
-
-\item 
-
 \end{itemize}
 
 
@@ -84,7 +79,7 @@ To conduct the question processing we followed three steps:
 
 \begin{itemize} 
 
-\item Phrase tagging, we created a class that tagged words in spanish called Spanish_Postagger (found in \texttt{spanish_tagger.py}) and we use the Stanford lexical and grammatical rules to train this class into being able to classify correctly each word according to it being a pronoun, noun, verb. The idea of doing this was to tag each word of the question that was being asked in order to recognize which are the relevant queries of the question. 
+\item Phrase tagging, we created a class that tagged words in Spanish called Spanish{\_}Postagger (found in \texttt{spanish{\_}tagger.py}) and we use the Stanford lexical and grammatical rules to train this class into being able to classify correctly each word according to it being a pronoun, noun, verb. The idea of doing this was to tag each word of the question that was being asked in order to recognize which are the relevant queries of the question. 
 
 Additionally, in order to control for common words, we used a dictionary of stop words  that can be found in \texttt{stopwords.json}
 
@@ -95,7 +90,7 @@ procedure and the work could not be found in the laws. That's why we devised
 two mechanisms through which the query could find new, similar concepts. 
 
 The first of this mechanisms was using a Word2Vec model, the Word2Vec model
-was trained using a library called gensim which allows to load Word2Vec models and ask for simmilarity and perform linear algebra to find concepts.
+was trained using a library called gensim which allows to load Word2Vec models and ask for similarity and perform linear algebra to find concepts.
 We created a class called W2V (found in \texttt{Word2VecModel.py}) and load it with a vector model found in http://crscardellino.me/SBWCE/
 
 The corpus used the following data
@@ -117,9 +112,9 @@ The second mechanism was to use an API from https://store.apicultur.com/,
 that allowed us to query for synonyms. We created a class called Synonyms in the \texttt{synonyms.py} code that fetched synonyms. 
 
 \item The third part was a question processing class that took a question transformed it into a query and assigned a question type. To assign the question type we used a dictionary of words
-called \texttt{question_type.json} that showed as keys the possible types of questions 
+called \texttt{question{\_}type.json} that showed as keys the possible types of questions 
 and as values the possible words that could related to this type of key. In this case there
-were only two types of questions: time in jail or monetary penalty and we simply used all words we could find related to these concepts with both the Word2Vec model and the synonyms API. We used a probability model to determine which was the most likely question type. We called the class Question and it is in the \texttt{question_processing.py} file.
+were only two types of questions: time in jail or monetary penalty and we simply used all words we could find related to these concepts with both the Word2Vec model and the synonyms API. We used a probability model to determine which was the most likely question type. We called the class Question and it is in the \texttt{question{\_}processing.py} file.
 
 
 In the end we used all of this classes to create one super class called Query in the \texttt{query.py} file that allowed you to initiate a query script in which you loaded all of the relevant classes: word2vec, stanford postagger and synonyms API, asked questions and got answers. 
@@ -154,9 +149,11 @@ We did not have metrics for this exercise, as we didn't have a labeled dataset t
 
 We got mixed results for these questions.An example of an answer about punishment for murder is shown below, it refers to death by reckless driving. 
 
+\begin{figure}
+\centering
 \includegraphics[width=1\textwidth]{Result.png}
-
-\image{} 
+\caption{\label{fig:results}Results obtained from the jupyter notebook}
+\end{figure}
 
 Overall, we are still far from retrieving the exact articles that contain answers for our questions. We analyze some of the reasons we believe this is happening. \\
 
@@ -181,7 +178,7 @@ There are possibilities of improvement in all the sections of our work. The firs
 \item \textbf{Document processing:} improve the pipeline to convert \texttt{doc} to \texttt{txt} files.
 \item \textbf{Question processing:} we need to train a w2v model with the Mexican laws to have better accuracy.
 \item \textbf{Document retrieval:} test other methods for passage retrieval (e.g. proximity), and other parameters for the tested ones (e.g. use a 4-gram or higher-gram model). It could also be useful to make a more specific document retrieval, based on the whole query, and not individual words.
-\item \textbf{Answer processing:} actually develop a script that takes a long passage and returns only the amount of information related to the sanction, penalty, or fine
+\item \textbf{Answer processing:} actually develop a script that takes a long passage and returns only the amount of information related to the sanction, penalty, or fine.
 \end{description}
 
 \newpage
@@ -212,6 +209,7 @@ Before running the code, make sure that the \texttt{txt} files are in folder cal
 
 Alternatively, you can use the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository.
 
+\newpage
 \begin{thebibliography}{9}
 \bibitem{jurafsky}
   Jurafsky, Dan, and James H. Martin. 
@@ -271,9 +269,9 @@ The time spent in project is the following
 
 The lines of code contributed by team member
 \begin{itemize}
-\item Hector Salvador - scrape.py, retrieval.py, index.py, QA_machine.ipynb (500 lines of code)
-\item Carlos Grandet - synonyms.py, spanish_tagger.py, query.py, question_processing.py,
-Word2VecModel.py, QA_machine.ipynb (500 lines of code)
+\item Hector Salvador - scrape.py, retrieval.py, index.py, QA{\_}machine.ipynb (500 lines of code)
+\item Carlos Grandet - synonyms.py, spanish{\_}tagger.py, query.py, question{\_}processing.py,
+Word2VecModel.py, QA{\_}machine.ipynb (500 lines of code)
 \end{itemize}
 
 Miscellaneous:
