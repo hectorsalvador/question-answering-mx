@@ -63,16 +63,59 @@ After spending several hours, we opted to manually convert \texttt{doc} files to
 \end{figure}
 
 \subsection{Question processing}
-Explain the IQHE in your own words. What does the density of states look like in a 2-DEG when $B=0$? What are Landau levels and how do they arise? What are edge states? What does the electron transport look like when you change the magnetic field? What do you expect to measure?
+Bla bla bla, Carlos did magic here!
 
 \subsection{Document retrieval}
+The document retrieval part had two steps: first create indices and store them on disk, then do the actual querying. For the first step, we built an inverted index where keys were words and values were names of laws containing an occurrence of such word. We also made such an index for every law, where we could find the article number containing a specific word.  These indices can be built using the python file called \texttt{index.py}. 
 
+For the querying step, we also took two steps: first look for documents where it was possible to find an answer, then scoring retrieved passages to determine which ones seemed to have an answer. The first search just employed inverted indices, identifying documents where at least one of the terms of our search appeared. Finally, to score our passages we employed a mix of the BM25 algorithm and a 3-gram model with Naive Bayes; this 3-gram model attempted to predict which passages were the most likely to be actually passages containing penalties or sanctions.
 
-\subsection{What didn't work?}
+It is important to note that words were stemmed for this exercise using the Spanish stemmer from the  \texttt{nltk} library. We also avoided stop words, which were manually filtered after getting the most frequently occurring words in the corpus. To separate laws into their corresponding articles, we used regular expressions. Encoding text files previously was really useful, as diacritics in Spanish were very easy to match using UTF-8 encoding and regex. 
+
+For the scoring we tried different methods, including:
+
+\begin{itemize}
+\item Jaro-Winkler distance of the original query with the passage.
+\item Count of terms in the query appearing in the passage.
+\item TF-IDF
+\end{itemize}
+
+Unfortunately, none of them seemed to provide useful results by itself. But when we added the extra filter with the n-gram model, results started to make more sense. This 3-gram model was trained using a manually constructed database of articles that contained information on penalties, sanctions, and fines from a variety of laws. We also used a database containing counterexamples of texts that did not have any type of penalties on them. We would finally take the probabilities of being a sentence passage (label 1) or not (label 0), and get a ratio as a score. 
 
 \section{Results}
-\subsection{Why}
-Explain a step-by-step recipe for fabrication here. How long did you etch and why? What is an Ohmic contact?
+We did not have metrics for this exercise, as we didn't have a labeled dataset to test questions. We manually checked for the coherence of top results, using three main questions:
+\begin{itemize}
+\item Cual es el castigo por homicidio? (\textit{What is the punishment for murder?})
+\item Cual es el castigo por el robo de hidrocarburos? (\textit{What is the punishment for stealing hydrocarbons?})
+\item Cual es el castigo por no pagar impuestos? (\textit{What is the punishment for not paying taxes?})
+\end{itemize}
+
+We got mixed results for these questions. Overall, we are still far from retrieving the exact articles that contain answers for our questions. We analyze some of the reasons we believe this is happening. \\
+
+For the query corresponding to the first question, \textit{What is the punishment for murder?}, we obtained the following articles:
+\begin{itemize}
+\item In cases of {\_}delitos culposos{\_}, up to one quarter of the penalties and security measures assigned by law to basic type of {\_}delito doloso{\_}, with exception of those for which the law specifies a specific penalty, will be imposed. Additionally, if corresponding, it will be imposed the suspension of up to three years of license to work on their corresponding profession. [...]
+\item The judge will void the substitution and will order the execution of prison penalty previously imposed when the sentenced doesn't comply with the conditions ordered for such effect, except when the judge esteems convenient to warn the sentenced that if a new fault is observed or is condemned by a new {\_}delito{\_}, the sanction will be made effective. [...]
+\item Technical or artistic professionals and their auxiliaries will be responsible for the {\_}delitos{\_} they might commit in the exercise of their profession [...]: \\
+Additional to the fixed sanction for the felonies consummated, depending on whether {\_}delitos{\_} are {\_}culposos{\_} or {\_}dolosos{\_}, a suspension of one month up to two years will be applied or up to definitive suspension in the case of {\_}reincidence. [...]
+\item Prison of three day up to two years or 30 to 90 days of fine will be imposed to: \\
+I. Whomever hides, destroys, or buries a corpse or human fetus without the order of the authority who corresponds, or without the requisites stipulated by the Civil Code and Health Code or special laws. \\
+II. [...]
+\end{itemize}
+
+We can identify that it is only in the last result where we have explicit penalties for crimes. Nevertheless, these do not correspond directly to murder or homicide, but rather to burying dead corpses. Although related, not the same concept. The other results talk about {\_}delitos {\_}dolosos y {\_}culposos, these are categorizations, and murder fall into one of these, depending on the intention of the murderer. 
+
+For the following two questions, we got unusual results. Sometimes these would refer to ...
+ 
+\subsection{Further Work}
+There are possibilities of improvement in all the sections of our work. The first and most important would be to create a test dataset with some example questions for which we know exactly which articles are relevant. Since neither of use are lawyers, we could only use our best judgement to determine which seemed to be sensible results. But after having a useful test set, we could do the following improvements.
+\begin{description}
+\item \textbf{Document processing:} 
+\item \textbf{Question processing:} 
+\item \textbf{Querying:} 
+\item \textbf{Document retrieval:} test other 
+\item \textbf{Answer processing:} actually develop a script that takes a long passage and returns only the amount of information related to the sanction, penalty, or fine
+\end{description}
 
 \newpage
 \section{How to run the code}
@@ -94,8 +137,9 @@ Before running the code, make sure that the \texttt{txt} files are in folder cal
 
 \begin{enumerate}
 \item Open a Python shell, preferably ipython.
-\item If you want to download the \texttt{doc} files, run \\ \texttt{\$ run scrape.py} \\ then call \\ \texttt{\$ go()} \\ This will download the \texttt{doc} files in the folder called \texttt{/doc}.
-\item Open a Python shell, preferably ipython.
+\item If you want to download the \texttt{doc} files, run \\ \texttt{\$ run scrape.py} \\ \texttt{\$ go()} \\ This will download the \texttt{doc} files in the folder called \texttt{/doc}.
+\item Create the indices by running \\ \texttt{\$ run index.py} \\ \texttt{\$ go()}
+\item Run a query with a sentence specified in \texttt{query.py}
 \end{enumerate}
 
 Alternatively, you can use the \texttt{jupyter notebook} titled \texttt{QA{\_}machine}, available in the root directory of the repository.
