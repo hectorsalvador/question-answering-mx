@@ -47,6 +47,23 @@ We followed the three stages of an IR-based factoid question answering machine (
 \caption{\label{fig:pipeline}IR-based factoid question answering has three stages: question processing, passage retrieval, and answer processing. This is Figure 28.2 from \cite{jurafsky}, Chapter 28.1.1.}
 \end{figure}
 
+\subsection{Previous work}
+
+We got inspiration from previous work on how create an answering machine
+
+\begin{itemize}
+
+\item Dominguez-Sal, David (2005) A Machine Learning Approach for Factoid Question Answering. This paper presents a factoid Question Answering system that is fully based on machine learning. The system achieves similar results to a state-of-the art QA system with answer extraction rules developed by a human expert. The paper uses a typical architecture consisting of three components linked sequentially: Question Processing (QP), which identifies the type of the put question, followed by Passage Retrieval (PR), which extracts a small number of relevant passages from the underlying speech transcriptions, and finally Answer Extraction (AE), which extracts and ranks exact answers from the previously retrieved passages. It has a similar pipeline than Jurafsky and Martin (2016) which was reassuring, although, it mainly relies on Maximum Entropy multiclass classifier to do the question and answering processing.
+
+\item  Strohn, Eylon. (2015) Question Answering Using Deep Learning. The paper proposes the application of several deep learning models to the question answering tasks. It particularly focuses on recurrent neural networks-based baselines. The idea is to propose a different idea than the conventional linguistically-based NLP techniques, such as parsing, part-of-speech tagging and coreference resolution.
+
+\item  Florent Jousse, Isabelle Tellier, Marc Tommasi and Patrick Marty (2014) Learning to Extract Answers in Question Answering: Experimental Studies. The main objective of this study it to adapt machine learning techniques defined for Information Extraction tasks to the slightly different task of answer extraction in QA systems. The specificities of QA systems are identified and exploited in this adaptation. Three algorithms, assuming an increasing abstraction of natural language texts, are tested and compared.
+
+\item 
+
+\end{itemize}
+
+
 \subsection{Document creation}
 Scraping was done using \texttt{scrape.py}. Laws were available both in \texttt{pdf} and \texttt{doc} files. Two methods were tested to convert the files to \texttt{txt} files that could be processed in Python. 
 
@@ -63,7 +80,51 @@ After spending several hours, we opted to manually convert \texttt{doc} files to
 \end{figure}
 
 \subsection{Question processing}
-Bla bla bla, Carlos did magic here!
+To conduct the question processing we followed three steps:
+
+\begin{itemize} 
+
+\item Phrase tagging, we created a class that tagged words in spanish called Spanish_Postagger (found in \texttt{spanish_tagger.py}) and we use the Stanford lexical and grammatical rules to train this class into being able to classify correctly each word according to it being a pronoun, noun, verb. The idea of doing this was to tag each word of the question that was being asked in order to recognize which are the relevant queries of the question. 
+
+Additionally, in order to control for common words, we used a dictionary of stop words  that can be found in \texttt{stopwords.json}
+
+\item Finding common words, the next part of the project was finding similar
+concepts or synonyms for the words that were part of the question. Sometimes
+there can be an issue when you are not asking the appropiate term for a legal
+procedure and the work could not be found in the laws. That's why we devised
+two mechanisms through which the query could find new, similar concepts. 
+
+The first of this mechanisms was using a Word2Vec model, the Word2Vec model
+was trained using a library called gensim which allows to load Word2Vec models and ask for simmilarity and perform linear algebra to find concepts.
+We created a class called W2V (found in \texttt{Word2VecModel.py}) and load it with a vector model found in http://crscardellino.me/SBWCE/
+
+The corpus used the following data
+
+\begin{itemize} 
+\item Spanish portion of SenSem.
+\item Spanish portion of the Ancora Corpus.
+\item Tibidabo Treebank and IULA Spanish LSP Treebank.
+\item The Spanish portion of the following OPUS Project Corpora:
+\item The books aligned by Andras Farkas.
+\item The JRC-Acquis collection of legislative text of the European Union.
+\item The News Commentary corpus.
+\item The United Nations documents compiled by Alexandre Rafalovitch and Robert Dale.
+\item The Spanish portion of the Europarl (European Parliament), compiled by Philipp Koehn.
+\item Dumps from the Spanish Wikipedia, Wikisource and Wikibooks on date 2015-09-01, parsed with the Wikipedia Extractor.
+\end{itemize} 
+
+The second mechanism was to use an API from https://store.apicultur.com/, 
+that allowed us to query for synonyms. We created a class called Synonyms in the \texttt{synonyms.py} code that fetched synonyms. 
+
+\item The third part was a question processing class that took a question transformed it into a query and assigned a question type. To assign the question type we used a dictionary of words
+called \texttt{question_type.json} that showed as keys the possible types of questions 
+and as values the possible words that could related to this type of key. In this case there
+were only two types of questions: time in jail or monetary penalty and we simply used all words we could find related to these concepts with both the Word2Vec model and the synonyms API. We used a probability model to determine which was the most likely question type. We called the class Question and it is in the \texttt{question_processing.py} file.
+
+
+In the end we used all of this classes to create one super class called Query in the \texttt{query.py} file that allowed you to initiate a query script in which you loaded all of the relevant classes: word2vec, stanford postagger and synonyms API, asked questions and got answers. 
+
+\end{itemize} 
 
 \subsection{Document retrieval}
 The document retrieval part had two steps: first create indices and store them on disk, then do the actual querying. For the first step, we built an inverted index where keys were words and values were names of laws containing an occurrence of such word. We also made such an index for every law, where we could find the article number containing a specific word.  These indices can be built using the python file called \texttt{index.py}. 
@@ -90,7 +151,14 @@ We did not have metrics for this exercise, as we didn't have a labeled dataset t
 \item Cual es el castigo por no pagar impuestos? (\textit{What is the punishment for not paying taxes?})
 \end{itemize}
 
-We got mixed results for these questions. Overall, we are still far from retrieving the exact articles that contain answers for our questions. We analyze some of the reasons we believe this is happening. \\
+
+We got mixed results for these questions.An example of an answer about punishment for murder is shown below, it refers to death by reckless driving. 
+
+\includegraphics[width=1\textwidth]{Result.png}
+
+\image{} 
+
+Overall, we are still far from retrieving the exact articles that contain answers for our questions. We analyze some of the reasons we believe this is happening. \\
 
 For the query corresponding to the first question, \textit{What is the punishment for murder?}, we obtained the following articles:
 \begin{itemize}
@@ -105,13 +173,13 @@ II. [...]
 
 We can identify that it is only in the last result where we have explicit penalties for crimes. Nevertheless, these do not correspond directly to murder or homicide, but rather to burying dead corpses. Although related, not the same concept. The other results talk about criminal offenses and wrongful misdemeanors, these are categorizations, and murder fall into one of these, depending on the intention of the murderer. 
 
-For the following two questions, we got unusual results. Sometimes these would refer to ...
+For the following two questions, we got unusual results. Sometimes these would refer to laws that were quite unrelated to our point of interest, such as the hydrocarbons query which gave results from laws that were about immigration. 
  
 \subsection{Further Work}
 There are possibilities of improvement in all the sections of our work. The first and most important would be to create a test dataset with some example questions for which we know exactly which articles are relevant. Since neither of use are lawyers, we could only use our best judgement to determine which seemed to be sensible results. But after having a useful test set, we could do the following improvements.
 \begin{description}
 \item \textbf{Document processing:} improve the pipeline to convert \texttt{doc} to \texttt{txt} files.
-\item \textbf{Question processing:} 
+\item \textbf{Question processing:} we need to train a w2v model with the Mexican laws to have better accuracy.
 \item \textbf{Document retrieval:} test other methods for passage retrieval (e.g. proximity), and other parameters for the tested ones (e.g. use a 4-gram or higher-gram model). It could also be useful to make a more specific document retrieval, based on the whole query, and not individual words.
 \item \textbf{Answer processing:} actually develop a script that takes a long passage and returns only the amount of information related to the sanction, penalty, or fine
 \end{description}
@@ -124,11 +192,12 @@ There are possibilities of improvement in all the sections of our work. The firs
 \item requests, bs4, for the scraping
 \item synonyms
 \item gensim 
-\item nltk, for stem.snowball.SpanishStemmer, tokenize.RegexpTokenizer
+\item nltk, for stem.snowball.SpanishStemmer, tokenize.RegexpTokenizer, tag.StanfordPOSTagger
 \item textblob, for easy word manipulation
 \item jellyfish, for Jaro-Winkler sitance
 \item sklearn, for general processing, including TF, IDF, and Multinomial Naive Bayes models
 \item numpy, pandas
+
 \end{itemize}
 
 \subsection{Instructions}
@@ -148,6 +217,12 @@ Alternatively, you can use the \texttt{jupyter notebook} titled \texttt{QA{\_}ma
   Jurafsky, Dan, and James H. Martin. 
   \emph{Speech and language processing: an introduction to natural language processing, computational linguistics, and speech recognition.} 
   India: Dorling Kindersley Pvt, Ltd., 2014.
+\bibitem{Jousse}
+ Florent Jousse, Isabelle Tellier, Marc Tommasi and Patrick Marty (2014) Learning to Extract Answers in Question Answering: Experimental Studies
+\bibitem{Sal}
+ Dominguez-Sal, David (2005) A Machine Learning Approach for Factoid Question Answering.
+\bibitem{Strohn}
+Strohn, Eylon. (2015) Question Answering Using Deep Learning. 
 
 \end{thebibliography}
 
@@ -176,6 +251,29 @@ It also has a bunch of Python scripts and miscellaneous files:
 \item \texttt{spanish{\_}tagger.py}
 \item \texttt{synonyms.py}
 \item \texttt{Word2VecModel.py}
+\end{itemize}
+
+The data sources are the following 
+\begin{itemize}
+\item Stanford Postagger - https://nlp.stanford.edu/software/tagger.shtml
+\item Word2Vec - http://crscardellino.me/SBWCE/
+\item Laws - http://www.diputados.gob.mx/LeyesBiblio/index.htm
+\end{itemize}
+
+The time spent in project is the following
+\begin{itemize}
+\item Literature Review - 8 hours 
+\item Scrapping Data - 6 hours 
+\item Processing data - 4 hours
+\item Question Processing 24 hours 
+\item Text retrieval - 20 hours 
+\end{itemize}
+
+The lines of code contributed by team member
+\begin{itemize}
+\item Hector Salvador - scrape.py, retrieval.py, index.py, QA_machine.ipynb (500 lines of code)
+\item Carlos Grandet - synonyms.py, spanish_tagger.py, query.py, question_processing.py,
+Word2VecModel.py, QA_machine.ipynb (500 lines of code)
 \end{itemize}
 
 Miscellaneous:
